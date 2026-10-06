@@ -1,0 +1,16 @@
+{
+  "categories": [
+    { "id": "cat-main", "name": "Main Theme", "description": "Inti makanan.", "sort_order": 1 },
+    { "id": "cat-dessert", "name": "Dessert", "description": "Manis.", "sort_order": 2 },
+    { "id": "cat-kosong", "name": "Belum Diisi", "description": "", "sort_order": 3 },
+    { "id": "cat-snack", "name": "Snack", "description": "", "sort_order": 4 }
+  ],
+  "items": [
+    { "id": "n-mie", "category_id": "cat-main", "parent_id": null, "name": "Mie", "description": "Hangat.", "image_url": "", "sort_order": 1 },
+    { "id": "n-ayam", "category_id": "cat-main", "parent_id": null, "name": "Ayam", "description": "Pilih bumbu.", "image_url": "", "sort_order": 2 },
+    { "id": "n-ayam-hitam", "category_id": "cat-main", "parent_id": "n-ayam", "name": "Ayam Bumbu Hitam", "description": "Manis gurih.", "image_url": "https://contoh.test/hitam.png", "sort_order": 1 },
+    { "id": "n-ayam-bakar", "category_id": "cat-main", "parent_id": "n-ayam", "name": "Ayam Bakar Madu", "description": "", "image_url": "", "sort_order": 2 },
+    { "id": "n-eskrim", "category_id": "cat-dessert", "parent_id": null, "name": "Es Krim", "description": "", "image_url": "", "sort_order": 1 },
+    { "id": "n-popcorn", "category_id": "cat-snack", "parent_id": null, "name": "Popcorn", "description": "", "image_url": "", "sort_order": 1 }
+  ]
+}

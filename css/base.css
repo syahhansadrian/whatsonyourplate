@@ -1,0 +1,349 @@
+:root {
+  --krem: #fff7f0;
+  --putih: #ffffff;
+  --blush: #f6c9ce;
+  --blush-tua: #efafb6;
+  --ink: #3a2a2a;
+  --ink-redup: #6b5a5a;
+  --raspberry: #c13b52;
+  --raspberry-tua: #a32f43;
+  --garis: rgba(58, 42, 42, 0.14);
+  --bayang: 0 10px 24px rgba(58, 42, 42, 0.1);
+  --radius-kartu: 20px;
+  --radius-tombol: 14px;
+  --radius-input: 12px;
+  --font-judul: "Fraunces", "Georgia", serif;
+  --font-teks: "Nunito", "Segoe UI", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--krem);
+  color: var(--ink);
+  font-family: var(--font-teks);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-judul);
+  font-weight: 900;
+  line-height: 1.05;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.wrap {
+  width: min(1080px, 100%);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 22px;
+  border-radius: var(--radius-tombol);
+  border: 2px solid transparent;
+  background: transparent;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.btn-utama {
+  background: var(--raspberry);
+  color: var(--putih);
+}
+
+.btn-utama:hover {
+  background: var(--raspberry-tua);
+}
+
+.btn-hantu {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+
+.btn-hantu:hover {
+  background: var(--blush);
+}
+
+.btn-kecil {
+  min-height: 40px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  border-radius: 10px;
+}
+
+.btn-bahaya {
+  border-color: var(--raspberry);
+  color: var(--raspberry);
+}
+
+.btn-bahaya:hover {
+  background: var(--raspberry);
+  color: var(--putih);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.kartu {
+  background: var(--putih);
+  border: 1px solid var(--garis);
+  border-radius: var(--radius-kartu);
+  box-shadow: var(--bayang);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.field label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.field .bantuan {
+  font-size: 0.85rem;
+  color: var(--ink-redup);
+}
+
+input,
+textarea {
+  font: inherit;
+  color: var(--ink);
+  background: var(--putih);
+  border: 1.5px solid var(--garis);
+  border-radius: var(--radius-input);
+  padding: 11px 14px;
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+
+input:hover,
+textarea:hover {
+  border-color: var(--blush-tua);
+}
+
+.kosong {
+  border: 2px dashed var(--blush-tua);
+  border-radius: var(--radius-kartu);
+  padding: clamp(24px, 6vw, 44px);
+  text-align: center;
+  color: var(--ink-redup);
+  background: rgba(246, 201, 206, 0.18);
+}
+
+.kosong h3 {
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.pemberitahuan {
+  background: var(--blush);
+  border: 1px solid var(--blush-tua);
+  border-radius: var(--radius-kartu);
+  padding: clamp(20px, 5vw, 32px);
+}
+
+.pemberitahuan h3 {
+  margin-bottom: 8px;
+}
+
+.pemberitahuan code {
+  background: var(--putih);
+  padding: 2px 7px;
+  border-radius: 8px;
+  font-size: 0.92em;
+  word-break: break-all;
+}
+
+.salah {
+  background: #fdecec;
+  border: 1.5px solid var(--raspberry);
+  color: var(--raspberry-tua);
+  border-radius: var(--radius-input);
+  padding: 10px 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.catatan {
+  background: var(--blush);
+  border: 1.5px solid var(--blush-tua);
+  color: var(--ink);
+  border-radius: var(--radius-input);
+  padding: 10px 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.memuat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 40vh;
+  font-weight: 700;
+  color: var(--ink-redup);
+}
+
+.memuat::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--blush);
+  border-top-color: var(--raspberry);
+  animation: putar 0.8s linear infinite;
+}
+
+@keyframes putar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+dialog {
+  border: none;
+  border-radius: var(--radius-kartu);
+  padding: 0;
+  width: min(520px, calc(100vw - 32px));
+  background: var(--putih);
+  color: var(--ink);
+  box-shadow: 0 24px 60px rgba(58, 42, 42, 0.28);
+}
+
+dialog::backdrop {
+  background: rgba(58, 42, 42, 0.5);
+}
+
+.dialog-isi {
+  padding: clamp(20px, 5vw, 30px);
+}
+
+.dialog-judul {
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+}
+
+.dialog-aksi {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes muncul {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

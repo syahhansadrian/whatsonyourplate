@@ -1,0 +1,12 @@
+# Supabase local secrets (jika suatu saat pakai CLI)
+supabase/.temp/
+supabase/.env
+
+# Node (jika suatu saat ada tooling)
+node_modules/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
