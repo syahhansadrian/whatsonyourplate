@@ -55,6 +55,7 @@ async function ujiShow() {
   assert.ok(!d.querySelector(".layar-landing .sub"), "show: landing tanpa deskripsi");
   assert.ok(!d.querySelector(".layar-landing .sapaan"), "show: landing tanpa sapaan");
   assert.ok(d.querySelector('[data-act="mulai"]').textContent.trim() === "Mulai", "show: tombol landing hanya 'Mulai'");
+  assert.ok(!d.querySelector(".bar-atas"), "show: tanpa bar atas, panggung memenuhi layar");
   assert.strictEqual(d.getElementById("tombolKembali").hidden, true, "show: tombol kembali tersembunyi di landing");
 
   assert.ok(!d.getElementById("tombolMusik"), "show: tombol musik dihapus, musik selalu jalan");
@@ -63,24 +64,22 @@ async function ujiShow() {
 
   klik(w, d.querySelector('[data-act="mulai"]'));
   await tunggu();
-  assert.strictEqual(d.querySelectorAll(".kartu-kategori").length, 3, "show: kategori kosong dilewati, tersisa 3");
-  assert.ok(d.querySelector(".layar-kategori"), "show: layar kategori tampil");
-  assert.ok(d.querySelector(".panggung .panggung-piring"), "show: panggung piring ada di layar kategori");
-  assert.ok(d.getElementById("tahap").textContent.includes("0 dari 3"), "show: progres 0 dari 3");
-
-  klik(w, d.querySelector('[data-act="pilih-kategori"][data-id="cat-main"]'));
-  await tunggu();
-  assert.ok(d.querySelector(".judul-layar").textContent === "Main Theme", "show: judul kategori");
+  assert.ok(d.querySelector(".layar-pilih"), "show: Mulai langsung ke layar pilih kategori pertama");
+  assert.ok(d.querySelector(".judul-layar").textContent === "Main Theme", "show: kategori pertama sesuai urutan admin");
   assert.ok(d.querySelector(".kotak-desc").textContent.includes("Inti makanan."), "show: deskripsi kategori tampil");
   assert.strictEqual(d.querySelectorAll(".kartu-pilihan").length, 2, "show: dua pilihan akar (Mie, Ayam)");
   assert.ok(d.querySelector(".panggung-pilihan .kartu-pilihan .bulatan"), "show: bulatan makanan di atas piring");
   assert.ok(d.querySelector(".panggung .piring-lingkar"), "show: fallback cincin piring di panggung");
+  assert.ok(d.querySelector(".layar-pilih .tahap").textContent.includes("kategori 1 dari 3"), "show: label progres di panggung, bukan di bar atas");
+  assert.ok(d.getElementById("layar").classList.contains("punya-nav"), "show: ruang tombol kembali direservasi supaya tidak menimpa label");
+  assert.ok(d.getElementById("statusLayar").textContent.includes("kategori 1 dari 3"), "show: live region sr-only juga menyebut progres");
 
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-ayam"]'));
   await tunggu();
   assert.ok(d.querySelector(".judul-layar").textContent === "Ayam", "show: masuk ke layar Ayam");
   assert.ok(d.querySelector(".kotak-desc").textContent.includes("Pilih bumbu."), "show: deskripsi Ayam tampil");
   assert.strictEqual(d.querySelectorAll(".kartu-pilihan").length, 2, "show: dua anak Ayam tampil");
+  assert.ok(d.querySelector(".layar-pilih .tahap").textContent.includes("Main Theme · kategori 1 dari 3"), "show: label menyebut asal kategori saat sudah di dalam satu pilihan");
 
   d.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
   await tunggu();
@@ -98,22 +97,13 @@ async function ujiShow() {
 
   klik(w, d.querySelector('[data-act="lanjut"]'));
   await tunggu();
-  assert.ok(d.querySelector(".kat-status") && d.querySelector(".kat-status").textContent.includes("Ayam Bumbu Hitam"), "show: status selesai di kategori");
-  const cta1 = d.querySelector('[data-act="lanjut-berikut"]');
-  assert.ok(cta1.textContent.includes("Dessert"), "show: CTA lanjut ke Dessert");
-
-  klik(w, cta1);
-  await tunggu();
-  assert.ok(d.querySelector(".judul-layar").textContent === "Dessert", "show: layar Dessert");
+  assert.ok(d.querySelector(".judul-layar").textContent === "Dessert", "show: lanjut langsung ke kategori berikutnya");
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-eskrim"]'));
   await tunggu();
   klik(w, d.querySelector('[data-act="lanjut"]'));
   await tunggu();
-  const cta2 = d.querySelector('[data-act="lanjut-berikut"]');
-  assert.ok(cta2.textContent.includes("Snack"), "show: CTA lanjut ke Snack");
+  assert.ok(d.querySelector(".judul-layar").textContent === "Snack", "show: lanjut ke kategori Snack");
 
-  klik(w, cta2);
-  await tunggu();
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-popcorn"]'));
   await tunggu();
   klik(w, d.querySelector('[data-act="lanjut"]'));
@@ -124,7 +114,7 @@ async function ujiShow() {
   assert.strictEqual(d.querySelectorAll(".daftar-hasil li").length, 3, "show: daftar hasil lengkap");
   assert.ok(d.querySelector('[role="img"]').getAttribute("aria-label").includes("Ayam Bumbu Hitam"), "show: aria-label piring menyebut pilihan");
   assert.strictEqual(d.querySelectorAll(".konfeti").length, 16, "show: konfeti perayaan ada");
-  assert.ok(d.getElementById("tahap").textContent.includes("siap"), "show: header piring siap");
+  assert.ok(d.querySelector(".layar-piring .tahap").textContent.includes("3 dari 3"), "show: piring akhir melaporkan semua kategori selesai");
 
   klik(w, d.querySelector('[data-act="ulang"]'));
   await tunggu();
@@ -134,7 +124,7 @@ async function ujiShow() {
   await tunggu();
   klik(w, d.getElementById("tombolKembali"));
   await tunggu();
-  assert.ok(d.querySelector(".layar-landing"), "show: tombol Kembali dari kategori ke landing");
+  assert.ok(d.querySelector(".layar-landing"), "show: tombol Kembali dari layar pilih ke landing");
 
   dom.window.close();
   console.log("TES SHOW: lulus");
@@ -157,19 +147,25 @@ async function ujiShowFotoPiring() {
   klik(w, d.querySelector('[data-act="mulai"]'));
   await tunggu();
   const foto = d.querySelector(".panggung-piring .piring-foto");
-  assert.ok(foto, "show: foto piring tampil di panggung kategori");
+  assert.ok(foto, "show: foto piring tampil di layar pilih pertama");
   assert.strictEqual(foto.getAttribute("src"), "https://contoh.test/piring.png", "show: src foto piring benar");
 
-  klik(w, d.querySelector('[data-act="pilih-kategori"][data-id="cat-dessert"]'));
+  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-ayam"]'));
   await tunggu();
-  assert.ok(d.querySelector(".panggung-piring .piring-foto"), "show: foto piring juga di layar pilihan");
-  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-eskrim"]'));
+  assert.ok(d.querySelector(".panggung-piring .piring-foto"), "show: foto piring juga di layar anak Ayam");
+  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-ayam-hitam"]'));
   await tunggu();
   assert.ok(d.querySelector(".panggung-piring .piring-foto"), "show: foto piring juga di layar hasil");
 
   klik(w, d.querySelector('[data-act="lanjut"]'));
   await tunggu();
-  klik(w, d.querySelector('[data-act="piring"]'));
+  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-eskrim"]'));
+  await tunggu();
+  klik(w, d.querySelector('[data-act="lanjut"]'));
+  await tunggu();
+  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-popcorn"]'));
+  await tunggu();
+  klik(w, d.querySelector('[data-act="lanjut"]'));
   await tunggu();
   const besar = d.querySelector(".piring-besar");
   assert.ok(besar.classList.contains("dengan-foto"), "show: piring akhir memakai foto piring admin");

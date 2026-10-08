@@ -8,6 +8,8 @@ Arah desain resmi proyek ini. Ditranskrip dari jawaban pemilik proyek.
 - Konsep: **gamifikasi memilih menu** — aplikasi untuk pasangan/teman yang bingung makan apa, di mana proses memilihnya yang dirayakan, bukan sekadar fungsionalitas. Layar dipenuhi foto makanan, pilihan diklik "di atas piring", dan piring akhir adalah hadiahnya.
 - Landing: cukup judul "What's on Your Plate" + tombol Mulai. Tanpa deskripsi apapun (permintaan pemilik proyek).
 - Urutan pilihan dipaksa mengikuti susunan admin; pemain tidak bisa melompat.
+- Alur layar: tidak ada layar daftar kategori. **Mulai** langsung membuka kategori pertama, **Lanjut** langsung membuka kategori berikutnya, dan piring akhir muncul begitu semua kategori terjawab.
+- Chrome: tidak ada bar atas. Tombol **Kembali** melayang di pojok kiri atas (like HUD), progres kategori tampil sebagai label kecil di dalam panggung tiap layar, dan area layar dipakai penuh. Alasan: halaman show harus terasa seperti panggung permainan, bukan panel aplikasi.
 - Musik latar: loop original 20 detik (dibuat sendiri untuk proyek ini), boleh diganti pemilik proyek dengan file yang sama namanya.
 - Kepribadian: playful & romantis. Hangat, ceria, sedikit flirty.
 - Suara teks: Bahasa Indonesia, akrab dan menggoda ringan ("Serahkan pilihan pada piring."), tanpa jargon korporat.
@@ -32,6 +34,7 @@ Tema terang saja, tanpa toggle gelap: palet krem + blush adalah identitas yang d
 ## Tipografi
 
 - Judul: **Fraunces** (serif chunky, axes SOFT/WONK, bobot 700-900). Alasan: diminta pemilik proyek "serif chunky/playful"; Fraunces punya bobot gemuk dan wajah aneh-manis yang cocok untuk karakter romantis-playful, bukan serif generik bawaan AI.
+- Wordmark landing ("What's on Your Plate"): **Barriecito** (tulisan tangan kapur). Alasan: satu-satunya judul yang berfungsi sebagai nama produk, jadi ditulis tangan supaya terasa hangat seperti menu tulis tangan; dipakai hanya di landing supaya semua judul di dalam alur tetap satu wajah dan hierarkinya tegas (R-06).
 - Teks isi & UI: **Nunito** (sans membulat, ramah). Alasan: pasangan yang lembut untuk Fraunces, tetap terbaca kecil di layar ponsel.
 - Hierarki: satu judul layar besar per layar (fokus tunggal), sisanya menurun tegas.
 

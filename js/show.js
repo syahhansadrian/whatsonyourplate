@@ -5,7 +5,7 @@
   var S = window.WOYPStore;
   var layar = document.getElementById("layar");
   var tombolKembali = document.getElementById("tombolKembali");
-  var tahapEl = document.getElementById("tahap");
+  var statusEl = document.getElementById("statusLayar");
 
   var EMOJI = ["🍜", "🍗", "🍚", "🍰", "🥤", "🍨", "🍤", "🥗", "🍝", "🥮", "🍲", "🧁", "🍢", "🍔", "🌮", "🍩"];
   var WARNA_KONFETI = ["#c13b52", "#efafb6", "#f6c9ce", "#3a2a2a"];
@@ -53,7 +53,7 @@
 
   function renderGate() {
     tombolKembali.hidden = true;
-    tahapEl.textContent = "";
+    statusEl.textContent = "";
     if (gate === "loading") {
       layar.innerHTML = '<div class="memuat">Memuat menu...</div>';
       return;
@@ -96,59 +96,19 @@
     );
   }
 
-  function renderCategories() {
-    if (!db.flow.length) {
-      return (
-        '<section class="layar-kategori layar-anim">' +
-        '<div class="kosong"><h3>Belum ada pilihan</h3>' +
-        "<p>Kategori atau menu belum dibuat. Isi dulu lewat halaman admin.</p>" +
-        '<p style="margin-top:16px"><a class="btn btn-utama" href="admin.html">Buka halaman admin</a></p></div>' +
-        "</section>"
-      );
-    }
-    var selesai = 0;
-    var cards = "";
-    for (var i = 0; i < db.flow.length; i++) {
-      var c = db.flow[i];
-      var pick = state.picks[c.id];
-      if (pick) selesai++;
-      cards +=
-        "<li><button type=\"button\" class=\"kartu-kategori\" data-act=\"pilih-kategori\" data-id=\"" + esc(c.id) + "\">" +
-        '<span class="kat-nama">' + esc(c.name) + "</span>" +
-        (c.description ? '<span class="kat-desc">' + esc(c.description) + "</span>" : "") +
-        (pick ? '<span class="kat-status">&#10003; ' + esc(pick.name) + "</span>" : "") +
-        "</button></li>";
-    }
-    var belum = L.pendingFlow(db, state.picks);
-    var aksi = "";
-    if (belum.length) {
-      aksi +=
-        '<button type="button" class="btn btn-utama btn-besar" data-act="lanjut-berikut" data-id="' + esc(belum[0].id) + '">' +
-        "Lanjut: " + esc(belum[0].name) + "</button>";
-    }
-    if (selesai > 0) {
-      aksi += '<button type="button" class="btn btn-hantu" data-act="piring">Lihat piringku</button>';
-    }
+  function renderKosong() {
     return (
-      '<section class="layar-kategori layar-anim">' +
-      '<div class="head">' +
-      '<h2 class="judul-layar">Mau mulai dari mana?</h2>' +
-      '<p class="sub">Kategori disusun sesuai urutan admin. Selesai: ' + selesai + " dari " + db.flow.length + ".</p>" +
-      "</div>" +
-      '<div class="panggung">' +
-      '<div class="panggung-pilihan"><ul class="daftar-kategori">' + cards + "</ul></div>" +
-      '<div class="panggung-piring" aria-hidden="true">' + piringHtml() + "</div>" +
-      "</div>" +
-      (aksi ? '<div class="aksi-bawah">' + aksi + "</div>" : "") +
+      '<section class="layar-kosong layar-anim">' +
+      '<div class="kosong"><h3>Belum ada pilihan</h3>' +
+      "<p>Kategori atau menu belum dibuat. Isi dulu lewat halaman admin.</p>" +
+      '<p style="margin-top:16px"><a class="btn btn-utama" href="admin.html">Buka halaman admin</a></p></div>' +
       "</section>"
     );
   }
 
   function renderChoose() {
     var info = L.currentChoices(db, state);
-    if (!info) return renderCategories();
-    var cat = L.findCat(db, state.catId);
-    var label = (cat ? cat.name + " · " : "") + "kategori " + tahapKategori();
+    if (!info) return renderKosong();
     var pilihan = "";
     for (var i = 0; i < info.choices.length; i++) {
       var n = info.choices[i];
@@ -158,25 +118,24 @@
         '<span class="pil-nama">' + esc(n.name) + "</span>" +
         "</button>";
     }
+    var label = labelTahap();
+    var kepala =
+      '<div class="head">' +
+      (label ? '<p class="tahap">' + esc(label) + "</p>" : "") +
+      '<h2 class="judul-layar">' + esc(info.title) + "</h2>" +
+      (info.description ? '<div class="kotak-desc">' + esc(info.description) + "</div>" : "") +
+      "</div>";
     if (!info.choices.length) {
       return (
         '<section class="layar-pilih layar-anim">' +
-        '<div class="head">' +
-        '<p class="tahap">' + esc(label) + "</p>" +
-        '<h2 class="judul-layar">' + esc(info.title) + "</h2>" +
-        (info.description ? '<div class="kotak-desc">' + esc(info.description) + "</div>" : "") +
-        "</div>" +
+        kepala +
         '<div class="kosong"><h3>Belum ada pilihan di sini</h3><p>Minta admin menambahkannya lewat halaman admin.</p></div>' +
         "</section>"
       );
     }
     return (
       '<section class="layar-pilih layar-anim">' +
-      '<div class="head">' +
-      '<p class="tahap">' + esc(label) + "</p>" +
-      '<h2 class="judul-layar">' + esc(info.title) + "</h2>" +
-      (info.description ? '<div class="kotak-desc">' + esc(info.description) + "</div>" : "") +
-      "</div>" +
+      kepala +
       '<div class="panggung">' +
       '<div class="panggung-pilihan">' + pilihan + "</div>" +
       '<div class="panggung-piring" aria-hidden="true">' + piringHtml() + "</div>" +
@@ -187,9 +146,10 @@
 
   function renderResult() {
     var pick = state.picks[state.catId];
-    if (!pick) return renderCategories();
+    if (!pick) return renderChoose();
     return (
       '<section class="layar-hasil layar-anim" role="status" aria-live="polite">' +
+      '<p class="tahap">' + esc(labelTahap()) + "</p>" +
       '<p class="kabar">Selamat, kamu akan makan</p>' +
       '<div class="panggung">' +
       '<div class="panggung-pilihan">' + hasilBulatanHtml(pick.name, pick.imageUrl) + "</div>" +
@@ -208,8 +168,8 @@
       return (
         '<section class="layar-piring layar-anim">' +
         '<div class="kosong" style="max-width:560px"><h3>Piring masih kosong</h3>' +
-        "<p>Pilih dulu satu kategori, nanti semua pilihanmu muncul di sini.</p>" +
-        '<p style="margin-top:16px"><button type="button" class="btn btn-utama" data-act="kembali">Pilih kategori</button></p></div>' +
+        "<p>Mulai dulu, nanti semua pilihanmu muncul di sini.</p>" +
+        '<p style="margin-top:16px"><button type="button" class="btn btn-utama" data-act="kembali">Kembali</button></p></div>' +
         "</section>"
       );
     }
@@ -244,7 +204,8 @@
     }
     return (
       '<section class="layar-piring layar-anim">' +
-      '<div><h2 class="judul-besar">Piringmu malam ini</h2>' +
+      '<div><p class="tahap">' + esc(labelTahap()) + "</p>" +
+      '<h2 class="judul-besar">Piringmu malam ini</h2>' +
       '<p class="sub" style="margin-inline:auto">Semua pilihanmu sudah masuk piring. Tinggal dieksekusi berdua.</p></div>' +
       '<div class="' + kelasPiring + '"' + gayaPiring + ' role="img" aria-label="Piring berisi ' + esc(namaSemua) + '">' +
       makanan +
@@ -256,23 +217,25 @@
     );
   }
 
-  function renderHeader() {
-    if (state.screen === "landing") {
-      tombolKembali.hidden = true;
-      tahapEl.textContent = "";
-      return;
+  function labelTahap() {
+    if (!db || state.screen === "landing" || state.screen === "categories") return "";
+    if (state.screen === "final") {
+      return db.flow.length + " dari " + db.flow.length + " kategori";
     }
-    tombolKembali.hidden = false;
-    if (state.screen === "categories") {
-      var selesai = 0;
-      db.flow.forEach(function (c) { if (state.picks[c.id]) selesai++; });
-      tahapEl.textContent = selesai + " dari " + db.flow.length + " selesai";
-    } else if (state.screen === "choose" || state.screen === "result") {
+    if (state.screen === "choose") {
+      var info = L.currentChoices(db, state);
       var cat = L.findCat(db, state.catId);
-      tahapEl.textContent = (cat ? cat.name : "") + " · " + tahapKategori();
-    } else {
-      tahapEl.textContent = "Piring siap";
+      var asal = info && !info.isCategoryLevel && cat ? cat.name + " · " : "";
+      return asal + "kategori " + tahapKategori();
     }
+    if (state.screen === "result") return "kategori " + tahapKategori();
+    return "";
+  }
+
+  function renderNav() {
+    var adaNav = state.screen !== "landing";
+    tombolKembali.hidden = !adaNav;
+    layar.classList.toggle("punya-nav", adaNav);
   }
 
   function render() {
@@ -280,9 +243,10 @@
       renderGate();
       return;
     }
-    renderHeader();
+    renderNav();
+    statusEl.textContent = labelTahap();
     if (state.screen === "landing") layar.innerHTML = renderLanding();
-    else if (state.screen === "categories") layar.innerHTML = renderCategories();
+    else if (state.screen === "categories") layar.innerHTML = renderKosong();
     else if (state.screen === "choose") layar.innerHTML = renderChoose();
     else if (state.screen === "result") layar.innerHTML = renderResult();
     else if (state.screen === "final") layar.innerHTML = renderFinal();
@@ -301,12 +265,9 @@
     if (!el) return;
     var act = el.getAttribute("data-act");
     var id = el.getAttribute("data-id");
-    if (act === "mulai") state = L.toCategories(state);
-    else if (act === "pilih-kategori") state = L.pickCategory(state, id);
+    if (act === "mulai") state = L.startFlow(db, state);
     else if (act === "pilih-node") state = L.pickNode(db, state, id);
-    else if (act === "lanjut") state = L.advance(db, state);
-    else if (act === "lanjut-berikut") state = L.pickCategory(state, id);
-    else if (act === "piring") state = Object.assign({}, state, { screen: "final", catId: null, stack: [] });
+    else if (act === "lanjut") state = L.startFlow(db, state);
     else if (act === "ulang") state = L.restart();
     else if (act === "kembali") state = L.goBack(state);
     else if (act === "coba-lagi") { boot(); return; }

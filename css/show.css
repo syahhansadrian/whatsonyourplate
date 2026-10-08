@@ -1,23 +1,14 @@
-.bar-atas {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 64px;
-  padding: 10px clamp(16px, 4vw, 32px);
-  background: var(--krem);
-  border-bottom: 1px solid var(--garis);
-}
-
-.bar-atas .btn {
+.kembali-papan {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 30;
   min-height: 44px;
+  background: var(--krem);
+  box-shadow: 0 4px 12px rgba(58, 42, 42, 0.16);
 }
 
 .tahap {
-  flex: 1;
   text-align: center;
   font-weight: 700;
   color: var(--raspberry);
@@ -29,16 +20,30 @@
 .layar {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 65px);
+  min-height: 100vh;
 }
 
 .layar-anim {
   animation: muncul 0.4s ease both;
 }
 
+.layar.punya-nav .layar-pilih,
+.layar.punya-nav .layar-kosong,
+.layar.punya-nav .layar-hasil,
+.layar.punya-nav .layar-piring {
+  padding-top: 78px;
+}
+
 .judul-besar {
   font-size: clamp(2.6rem, 10vw, 5.6rem);
   letter-spacing: -0.01em;
+}
+
+.layar-landing .judul-besar {
+  font-family: "Barriecito", var(--font-judul);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: normal;
 }
 
 .judul-layar {
@@ -115,76 +120,24 @@
   font-size: 1.12rem;
 }
 
-.layar-kategori,
+.layar-kosong,
 .layar-pilih {
   flex: 1;
   padding: clamp(26px, 6vw, 54px) clamp(16px, 4vw, 32px);
+  display: flex;
+  flex-direction: column;
 }
 
-.layar-kategori .head,
+.layar-kosong {
+  justify-content: center;
+}
+
 .layar-pilih .head {
   max-width: 720px;
   margin-bottom: clamp(20px, 5vw, 34px);
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.daftar-kategori {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 14px;
-}
-
-.kartu-kategori {
-  width: 100%;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: clamp(16px, 4vw, 22px);
-  background: var(--putih);
-  border: 1.5px solid var(--garis);
-  border-radius: var(--radius-kartu);
-  box-shadow: var(--bayang);
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-.kartu-kategori:hover {
-  transform: translateY(-2px);
-  border-color: var(--raspberry);
-}
-
-.kat-nama {
-  font-family: var(--font-judul);
-  font-weight: 900;
-  font-size: clamp(1.25rem, 4vw, 1.6rem);
-}
-
-.kat-desc {
-  color: var(--ink-redup);
-  font-size: 0.98rem;
-}
-
-.kat-status {
-  margin-top: 6px;
-  align-self: flex-start;
-  background: var(--blush);
-  color: var(--ink);
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.aksi-bawah {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: clamp(22px, 5vw, 36px);
 }
 
 .kotak-desc {
@@ -213,10 +166,6 @@
   width: 100%;
   max-width: 980px;
   margin-bottom: clamp(-72px, -7vw, -34px);
-}
-
-.panggung-pilihan .daftar-kategori {
-  width: 100%;
 }
 
 .panggung-piring {
@@ -473,16 +422,4 @@
   color: var(--ink-redup);
   font-weight: 600;
   font-size: 0.9em;
-}
-
-@media (min-width: 720px) {
-  .daftar-kategori {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-
-  .layar-kategori .head {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
 }

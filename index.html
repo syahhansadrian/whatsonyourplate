@@ -7,17 +7,15 @@
   <meta name="description" content="Pilih kategori, telusuri pilihan, dan lihat piring makanan kalian malam ini.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barriecito&family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/show.css">
 </head>
 <body>
-  <header class="bar-atas">
-    <button type="button" class="btn btn-hantu btn-kecil" id="tombolKembali" hidden>Kembali</button>
-    <span class="tahap" id="tahap" role="status" aria-live="polite"></span>
-    <audio id="musikLatar" loop preload="none" src="assets/musik/bgmusik.mp3" hidden></audio>
-    <audio id="sfxKlik" preload="auto" src="assets/musik/pop.mp3" hidden></audio>
-  </header>
+  <button type="button" class="btn btn-hantu btn-kecil kembali-papan" id="tombolKembali" hidden>&#8592; Kembali</button>
+  <p class="sr-only" id="statusLayar" role="status" aria-live="polite"></p>
+  <audio id="musikLatar" loop preload="none" src="assets/musik/bgmusik.mp3" hidden></audio>
+  <audio id="sfxKlik" preload="auto" src="assets/musik/pop.mp3" hidden></audio>
   <main id="layar" class="layar"></main>
   <noscript>
     <div class="wrap" style="padding-top:40px">

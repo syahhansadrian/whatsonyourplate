@@ -47,11 +47,7 @@ async function ujiShowAxe() {
 
   klik(w, d.querySelector('[data-act="mulai"]'));
   await tunggu();
-  await jalankanAxe(w, "show:kategori");
-
-  klik(w, d.querySelector('[data-act="pilih-kategori"][data-id="cat-main"]'));
-  await tunggu();
-  await jalankanAxe(w, "show:pilih-kategori");
+  await jalankanAxe(w, "show:pilih-awal");
 
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-ayam"]'));
   await tunggu();
@@ -63,13 +59,10 @@ async function ujiShowAxe() {
 
   klik(w, d.querySelector('[data-act="lanjut"]'));
   await tunggu();
-  klik(w, d.querySelector('[data-act="lanjut-berikut"]'));
-  await tunggu();
+  await jalankanAxe(w, "show:pilih-berikutnya");
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-eskrim"]'));
   await tunggu();
   klik(w, d.querySelector('[data-act="lanjut"]'));
-  await tunggu();
-  klik(w, d.querySelector('[data-act="lanjut-berikut"]'));
   await tunggu();
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-popcorn"]'));
   await tunggu();

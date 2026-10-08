@@ -11,7 +11,8 @@ Aplikasi web untuk memilih makanan berdua dengan nuansa permainan: halaman **adm
 | `DESIGN.md` | Arah desain resmi (palet, huruf, dial) |
 | `supabase/schema.sql` | Tabel, keamanan (RLS), storage, data contoh |
 | `supabase/migrasi-piring.sql` | Migrasi satu kali untuk tabel settings (foto piring) |
-| `assets/musik/loop.mp3` | Musik latar loop (original, silakan ganti) |
+| `assets/musik/bgmusik.mp3` | Musik latar loop (original, silakan ganti) |
+| `assets/musik/pop.mp3` | Suara klik |
 | `js/config.js` | Isi dengan kunci Supabase Anda |
 | `js/logic.js` | Alur pilihan (murni, ada unit test di `test/`) |
 | `js/store.js` | Koneksi Supabase (data, login, gambar, settings) |
@@ -47,7 +48,7 @@ http://localhost/Whats%20On%20Your%20Plate/
 
 - `admin.html`: klik **Daftar dulu**, buat akun (email + password), otomatis masuk.
 - `index.html`: halaman presentasi, tidak butuh login.
-- Musik latar diputar setelah klik pertama (**Mulai**) karena browser menunggu interaksi pengguna. Tombol **Musik: nyala/mati** di bar atas mengatur musik; preferensinya disimpan per browser. Ganti lagu: timpa `assets/musik/loop.mp3` dengan MP3 loop milik Anda (disarankan ±15-30 detik).
+- Musik latar dan suara klik selalu berbunyi, tanpa tombol: musik `assets/musik/bgmusik.mp3`, suara klik `assets/musik/pop.mp3`. Browser memblokir suara sebelum ada interaksi, jadi bunyinya baru masuk setelah pertama kali diklik/tombol. Ganti lagunya: timpa `bgmusik.mp3` dengan MP3 loop milik Anda (disarankan ±15-30 detik).
 
 ## 3. Cara pakai admin
 

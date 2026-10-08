@@ -28,11 +28,9 @@ assert.deepStrictEqual(db.byId["n-ayam"].children.map((n) => n.name), ["Ayam Bum
 let s = L.initial();
 assert.strictEqual(s.screen, "landing");
 
-s = L.toCategories(s);
-assert.strictEqual(s.screen, "categories");
-
-s = L.pickCategory(s, "cat-main");
-assert.strictEqual(s.screen, "choose");
+s = L.startFlow(db, s);
+assert.strictEqual(s.screen, "choose", "Mulai langsung ke layar pilih");
+assert.strictEqual(s.catId, "cat-main", "kategori pertama sesuai urutan admin");
 let info = L.currentChoices(db, s);
 assert.strictEqual(info.title, "Main Theme");
 assert.strictEqual(info.description, "Inti makanan.");
@@ -57,26 +55,31 @@ assert.strictEqual(s.picks["cat-main"].name, "Ayam Bumbu Hitam");
 assert.strictEqual(s.picks["cat-main"].imageUrl, "img/hitam.png");
 assert.strictEqual(s.picks["cat-main"].categoryName, "Main Theme");
 
-s = L.advance(db, s);
-assert.strictEqual(s.screen, "categories", "masih ada kategori pending");
-assert.strictEqual(L.pendingFlow(db, s.picks).length, 2);
+const sHasil = L.goBack(s);
+assert.strictEqual(sHasil.screen, "choose", "kembali dari hasil ke layar pilih kategori itu");
+assert.strictEqual(sHasil.catId, "cat-main");
+assert.strictEqual(sHasil.stack.length, 0, "kembali dari hasil ke pilihan akar");
 
-s = L.pickCategory(s, "cat-dessert");
+s = L.startFlow(db, s);
+assert.strictEqual(s.screen, "choose", "lanjut langsung ke kategori berikutnya");
+assert.strictEqual(s.catId, "cat-dessert", "kategori berikutnya sesuai urutan admin");
+assert.strictEqual(L.pendingFlow(db, s.picks).length, 2, "masih ada kategori pending");
+
 s = L.pickNode(db, s, "n-eskrim");
-s = L.advance(db, s);
-assert.strictEqual(s.screen, "categories");
+s = L.startFlow(db, s);
+assert.strictEqual(s.screen, "choose");
+assert.strictEqual(s.catId, "cat-snack");
 
-s = L.pickCategory(s, "cat-snack");
 s = L.pickNode(db, s, "n-popcorn");
 assert.strictEqual(L.allDone(db, s.picks), true);
-s = L.advance(db, s);
+s = L.startFlow(db, s);
 assert.strictEqual(s.screen, "final", "semua selesai masuk layar piring");
 
 const plate = L.plateItems(db, s.picks);
 assert.deepStrictEqual(plate.map((p) => p.name), ["Ayam Bumbu Hitam", "Es Krim", "Popcorn"], "piring sesuai urutan kategori");
 
 s = L.goBack(s);
-assert.strictEqual(s.screen, "categories", "kembali dari piring ke kategori");
+assert.strictEqual(s.screen, "landing", "kembali dari piring ke halaman awal");
 
 s = L.pickCategory(s, "cat-main");
 s = L.pickNode(db, s, "n-mie");
@@ -92,6 +95,8 @@ const empty = L.prepare([], []);
 assert.deepStrictEqual(empty.flow, [], "data kosong aman");
 assert.strictEqual(L.allDone(empty, {}), false);
 assert.deepStrictEqual(L.plateItems(empty, {}), []);
+assert.strictEqual(L.startFlow(empty, L.initial()).screen, "categories", "data kosong menuju empty state");
+assert.strictEqual(L.goBack(L.startFlow(empty, L.initial())).screen, "landing", "kembali dari empty state ke landing");
 
 assert.strictEqual(L.goBack(L.initial()).screen, "landing", "kembali di landing tidak berubah");
 

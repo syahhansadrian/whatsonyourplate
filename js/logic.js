@@ -55,8 +55,15 @@
     return null;
   }
 
-  function toCategories(s) {
-    return Object.assign({}, s, { screen: "categories", catId: null, stack: [] });
+  function startFlow(db, s) {
+    if (!db.flow.length) {
+      return Object.assign({}, s, { screen: "categories", catId: null, stack: [] });
+    }
+    var pending = pendingFlow(db, s.picks);
+    if (!pending.length) {
+      return Object.assign({}, s, { screen: "final", catId: null, stack: [] });
+    }
+    return Object.assign({}, s, { screen: "choose", catId: pending[0].id, stack: [] });
   }
 
   function pickCategory(s, catId) {
@@ -112,10 +119,10 @@
     if (s.screen === "choose" && s.stack.length > 0) {
       return Object.assign({}, s, { stack: s.stack.slice(0, -1) });
     }
-    if (s.screen === "choose" || s.screen === "result" || s.screen === "final") {
-      return toCategories(s);
+    if (s.screen === "result") {
+      return pickCategory(s, s.catId);
     }
-    if (s.screen === "categories") {
+    if (s.screen === "categories" || s.screen === "choose" || s.screen === "final") {
       return Object.assign({}, s, { screen: "landing" });
     }
     return s;
@@ -139,11 +146,6 @@
     return out;
   }
 
-  function advance(db, s) {
-    if (allDone(db, s.picks)) return Object.assign({}, s, { screen: "final", catId: null, stack: [] });
-    return toCategories(s);
-  }
-
   function restart() {
     return initial();
   }
@@ -153,7 +155,7 @@
     prepare: prepare,
     initial: initial,
     findCat: findCat,
-    toCategories: toCategories,
+    startFlow: startFlow,
     pickCategory: pickCategory,
     currentChoices: currentChoices,
     pickNode: pickNode,
@@ -161,7 +163,6 @@
     pendingFlow: pendingFlow,
     allDone: allDone,
     plateItems: plateItems,
-    advance: advance,
     restart: restart
   };
 });
