@@ -52,12 +52,28 @@ async function ujiShow() {
   const d = w.document;
   assert.ok(d.querySelector(".layar-landing"), "show: layar landing tampil");
   assert.ok(d.querySelector(".judul-besar").textContent.includes("What's on"), "show: judul What's on Your Plate");
+  assert.ok(!d.querySelector(".layar-landing .sub"), "show: landing tanpa deskripsi");
+  assert.ok(!d.querySelector(".layar-landing .sapaan"), "show: landing tanpa sapaan");
+  assert.ok(d.querySelector('[data-act="mulai"]').textContent.trim() === "Mulai", "show: tombol landing hanya 'Mulai'");
   assert.strictEqual(d.getElementById("tombolKembali").hidden, true, "show: tombol kembali tersembunyi di landing");
+
+  const tombolMusik = d.getElementById("tombolMusik");
+  assert.ok(tombolMusik, "show: tombol musik ada");
+  assert.strictEqual(tombolMusik.getAttribute("aria-pressed"), "true", "show: musik bawaan nyala");
+  klik(w, tombolMusik);
+  await tunggu();
+  assert.ok(tombolMusik.textContent.includes("mati"), "show: klik mematikan musik");
+  assert.strictEqual(tombolMusik.getAttribute("aria-pressed"), "false", "show: aria-pressed musik mati");
+  assert.strictEqual(w.localStorage.getItem("woyp-musik"), "mati", "show: preferensi musik tersimpan");
+  klik(w, tombolMusik);
+  await tunggu();
+  assert.ok(tombolMusik.textContent.includes("nyala"), "show: klik menyalakan musik lagi");
 
   klik(w, d.querySelector('[data-act="mulai"]'));
   await tunggu();
   assert.strictEqual(d.querySelectorAll(".kartu-kategori").length, 3, "show: kategori kosong dilewati, tersisa 3");
   assert.ok(d.querySelector(".layar-kategori"), "show: layar kategori tampil");
+  assert.ok(d.querySelector(".panggung .panggung-piring"), "show: panggung piring ada di layar kategori");
   assert.ok(d.getElementById("tahap").textContent.includes("0 dari 3"), "show: progres 0 dari 3");
 
   klik(w, d.querySelector('[data-act="pilih-kategori"][data-id="cat-main"]'));
@@ -65,6 +81,8 @@ async function ujiShow() {
   assert.ok(d.querySelector(".judul-layar").textContent === "Main Theme", "show: judul kategori");
   assert.ok(d.querySelector(".kotak-desc").textContent.includes("Inti makanan."), "show: deskripsi kategori tampil");
   assert.strictEqual(d.querySelectorAll(".kartu-pilihan").length, 2, "show: dua pilihan akar (Mie, Ayam)");
+  assert.ok(d.querySelector(".panggung-pilihan .kartu-pilihan .bulatan"), "show: bulatan makanan di atas piring");
+  assert.ok(d.querySelector(".panggung .piring-lingkar"), "show: fallback cincin piring di panggung");
 
   klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-ayam"]'));
   await tunggu();
@@ -128,6 +146,45 @@ async function ujiShow() {
 
   dom.window.close();
   console.log("TES SHOW: lulus");
+}
+
+async function ujiShowFotoPiring() {
+  const dom = buatDom("index.html");
+  const w = dom.window;
+  w.eval(baca("js/logic.js"));
+  w.eval('window.WOYP_CONFIG = { SUPABASE_URL: "https://x.supabase.co", SUPABASE_ANON_KEY: "kunci", SUPABASE_BUCKET: "food-images" };');
+  w.eval(baca("js/store.js"));
+  const seedPiring = JSON.parse(JSON.stringify(seed));
+  seedPiring.settings = { plate_image_url: "https://contoh.test/piring.png" };
+  w.__seedPiring = seedPiring;
+  w.eval("window.WOYPStore.isConfigured = function(){ return true; }; window.WOYPStore.fetchAll = function(){ return Promise.resolve({ ok: true, data: window.__seedPiring }); };");
+  w.eval(baca("js/show.js"));
+  await tunggu();
+  const d = w.document;
+
+  klik(w, d.querySelector('[data-act="mulai"]'));
+  await tunggu();
+  const foto = d.querySelector(".panggung-piring .piring-foto");
+  assert.ok(foto, "show: foto piring tampil di panggung kategori");
+  assert.strictEqual(foto.getAttribute("src"), "https://contoh.test/piring.png", "show: src foto piring benar");
+
+  klik(w, d.querySelector('[data-act="pilih-kategori"][data-id="cat-dessert"]'));
+  await tunggu();
+  assert.ok(d.querySelector(".panggung-piring .piring-foto"), "show: foto piring juga di layar pilihan");
+  klik(w, d.querySelector('[data-act="pilih-node"][data-id="n-eskrim"]'));
+  await tunggu();
+  assert.ok(d.querySelector(".panggung-piring .piring-foto"), "show: foto piring juga di layar hasil");
+
+  klik(w, d.querySelector('[data-act="lanjut"]'));
+  await tunggu();
+  klik(w, d.querySelector('[data-act="piring"]'));
+  await tunggu();
+  const besar = d.querySelector(".piring-besar");
+  assert.ok(besar.classList.contains("dengan-foto"), "show: piring akhir memakai foto piring admin");
+  assert.ok(besar.getAttribute("style").includes("https://contoh.test/piring.png"), "show: background piring akhir = foto piring");
+
+  dom.window.close();
+  console.log("TES SHOW (foto piring): lulus");
 }
 
 async function ujiShowTanpaData() {
@@ -231,6 +288,12 @@ function stubAdmin(w) {
     return { ok: true, data: null };
   };
   w.WOYPStore.exportData = async function () { return { ok: true, data: JSON.parse(JSON.stringify(state)) }; };
+  w.WOYPStore.saveSetting = async function (k, v) {
+    state.settings = state.settings || {};
+    state.settings[k] = v;
+    return { ok: true, data: { key: k, value: v } };
+  };
+  w.WOYPStore.uploadImage = async function () { return { ok: true, data: "https://cdn.test/piring-baru.png" }; };
 }
 
 async function ujiAdmin() {
@@ -250,6 +313,8 @@ async function ujiAdmin() {
 
   assert.strictEqual(d.getElementById("areaAdmin").hidden, false, "admin: panel admin tampil setelah sesi ada");
   assert.strictEqual(d.getElementById("areaLogin").hidden, true, "admin: login tersembunyi saat sudah sesi");
+  assert.strictEqual(d.getElementById("areaMemuat").hidden, true, "admin: tulisan memuat atas disembunyikan");
+  assert.strictEqual(w.getComputedStyle(d.getElementById("areaMemuat")).display, "none", "admin: CSS hidden menang atas .memuat");
   assert.ok(d.getElementById("emailAdmin").textContent.includes("admin@contoh.com"), "admin: email tampil di bar");
   assert.ok(d.getElementById("daftarKategori").textContent.includes("Main Theme"), "admin: kategori terdaftar");
   assert.ok(d.getElementById("daftarKategori").textContent.includes("Belum Diisi"), "admin: kategori ikut tampil");
@@ -271,6 +336,9 @@ async function ujiAdmin() {
   assert.strictEqual(dialogItem.open, true, "admin: dialog item terbuka");
   assert.ok(d.getElementById("dialogItemJudul").textContent === "Ubah pilihan", "admin: judul dialog ubah");
   assert.ok(d.getElementById("itemName").value.length > 0, "admin: nama item terisi");
+  const cbHapusBg = d.getElementById("itemHapusBg");
+  assert.ok(cbHapusBg, "admin: checkbox hapus latar ada");
+  assert.strictEqual(cbHapusBg.checked, true, "admin: checkbox hapus latar aktif secara bawaan");
   klik(w, dialogItem.querySelector("[data-tutup]"));
   await tunggu();
   assert.strictEqual(dialogItem.open, false, "admin: dialog item tertutup via Batal");
@@ -295,6 +363,27 @@ async function ujiAdmin() {
   const urutan = Array.from(d.querySelectorAll(".kat-info h2")).map((h) => h.textContent);
   assert.ok(urutan.indexOf("Dessert") < urutan.indexOf("Main Theme"), "admin: urutan kategori bisa digeser");
 
+  klik(w, d.getElementById("tombolPiring"));
+  await tunggu();
+  const dialogPiring = d.getElementById("dialogPiring");
+  assert.strictEqual(dialogPiring.open, true, "admin: dialog foto piring terbuka");
+  const inputPiring = d.getElementById("piringUrl");
+  inputPiring.value = "https://contoh.test/piring-baru.png";
+  inputPiring.dispatchEvent(new w.Event("input", { bubbles: true }));
+  d.getElementById("formPiring").dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  await tunggu(60);
+  assert.strictEqual(dialogPiring.open, false, "admin: dialog foto piring tertutup setelah simpan");
+  assert.strictEqual(w.__state.settings.plate_image_url, "https://contoh.test/piring-baru.png", "admin: foto piring tersimpan ke settings");
+  assert.ok(d.getElementById("adminPesan").textContent.includes("Foto piring tersimpan"), "admin: konfirmasi simpan foto piring");
+
+  klik(w, d.getElementById("tombolPiring"));
+  await tunggu();
+  assert.ok(d.getElementById("piringUrl").value.includes("piring-baru.png"), "admin: dialog piring menampilkan foto tersimpan");
+  klik(w, d.getElementById("piringHapus"));
+  await tunggu(60);
+  assert.strictEqual(w.__state.settings.plate_image_url, "", "admin: foto piring dihapus");
+  assert.strictEqual(dialogPiring.open, false, "admin: dialog piring tertutup saat hapus");
+
   const buatAkun = d.getElementById("tombolGantiMode");
   klik(w, buatAkun);
   assert.ok(buatAkun.textContent.includes("Sudah punya akun"), "admin: mode daftar aktif");
@@ -316,6 +405,7 @@ async function ujiAdmin() {
 
 (async function () {
   await ujiShow();
+  await ujiShowFotoPiring();
   await ujiShowTanpaData();
   await ujiShowSetup();
   await ujiShowGagalMuat();

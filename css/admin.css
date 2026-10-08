@@ -224,6 +224,21 @@
   gap: 6px;
 }
 
+.cek-hapusbg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.cek-hapusbg input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--raspberry);
+}
+
 .jam-hias {
   width: 14px;
   height: 14px;

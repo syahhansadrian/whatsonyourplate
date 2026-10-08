@@ -42,6 +42,15 @@
     return '<span class="hasil-bulatan" aria-hidden="true">' + emojiFor(name) + "</span>";
   }
 
+  var piringUrl = "";
+
+  function piringHtml() {
+    if (piringUrl) {
+      return '<img class="piring-foto" src="' + esc(piringUrl) + '" alt="">';
+    }
+    return '<div class="piring-lingkar" aria-hidden="true"></div>';
+  }
+
   function renderGate() {
     tombolKembali.hidden = true;
     tahapEl.textContent = "";
@@ -81,10 +90,8 @@
     return (
       '<section class="layar-landing layar-anim">' +
       '<div class="piring-lingkar" aria-hidden="true"></div>' +
-      '<p class="sapaan">Malam ini makan apa?</p>' +
       '<h1 class="judul-besar"><span>What\'s on</span><span>Your Plate</span></h1>' +
-      '<p class="sub">Pilih kategori, ikuti alur pilihanmu, lalu lihat apa yang menunggu di piring kalian berdua.</p>' +
-      '<button type="button" class="btn btn-utama btn-besar" data-act="mulai">Mulai pilih</button>' +
+      '<button type="button" class="btn btn-utama btn-besar" data-act="mulai">Mulai</button>' +
       "</section>"
     );
   }
@@ -128,7 +135,10 @@
       '<h2 class="judul-layar">Mau mulai dari mana?</h2>' +
       '<p class="sub">Kategori disusun sesuai urutan admin. Selesai: ' + selesai + " dari " + db.flow.length + ".</p>" +
       "</div>" +
-      '<ul class="daftar-kategori">' + cards + "</ul>" +
+      '<div class="panggung">' +
+      '<div class="panggung-pilihan"><ul class="daftar-kategori">' + cards + "</ul></div>" +
+      '<div class="panggung-piring" aria-hidden="true">' + piringHtml() + "</div>" +
+      "</div>" +
       (aksi ? '<div class="aksi-bawah">' + aksi + "</div>" : "") +
       "</section>"
     );
@@ -149,7 +159,16 @@
         "</button>";
     }
     if (!info.choices.length) {
-      pilihan = '<div class="kosong" style="grid-column:1/-1"><h3>Belum ada pilihan di sini</h3><p>Minta admin menambahkannya lewat halaman admin.</p></div>';
+      return (
+        '<section class="layar-pilih layar-anim">' +
+        '<div class="head">' +
+        '<p class="tahap">' + esc(label) + "</p>" +
+        '<h2 class="judul-layar">' + esc(info.title) + "</h2>" +
+        (info.description ? '<div class="kotak-desc">' + esc(info.description) + "</div>" : "") +
+        "</div>" +
+        '<div class="kosong"><h3>Belum ada pilihan di sini</h3><p>Minta admin menambahkannya lewat halaman admin.</p></div>' +
+        "</section>"
+      );
     }
     return (
       '<section class="layar-pilih layar-anim">' +
@@ -158,7 +177,10 @@
       '<h2 class="judul-layar">' + esc(info.title) + "</h2>" +
       (info.description ? '<div class="kotak-desc">' + esc(info.description) + "</div>" : "") +
       "</div>" +
-      '<div class="pilihan-grid">' + pilihan + "</div>" +
+      '<div class="panggung">' +
+      '<div class="panggung-pilihan">' + pilihan + "</div>" +
+      '<div class="panggung-piring" aria-hidden="true">' + piringHtml() + "</div>" +
+      "</div>" +
       "</section>"
     );
   }
@@ -169,7 +191,10 @@
     return (
       '<section class="layar-hasil layar-anim" role="status" aria-live="polite">' +
       '<p class="kabar">Selamat, kamu akan makan</p>' +
-      hasilBulatanHtml(pick.name, pick.imageUrl) +
+      '<div class="panggung">' +
+      '<div class="panggung-pilihan">' + hasilBulatanHtml(pick.name, pick.imageUrl) + "</div>" +
+      '<div class="panggung-piring" aria-hidden="true">' + piringHtml() + "</div>" +
+      "</div>" +
       '<p class="nama-hasil">' + esc(pick.name) + "</p>" +
       '<p class="kat-hasil">dari kategori ' + esc(pick.categoryName) + "</p>" +
       '<button type="button" class="btn btn-utama btn-besar" data-act="lanjut">Lanjut</button>' +
@@ -211,11 +236,17 @@
         "%;--i:" + k + ";background:" + WARNA_KONFETI[k % WARNA_KONFETI.length] + '"></span>';
     }
     var namaSemua = picks.map(function (p) { return p.name; }).join(", ");
+    var kelasPiring = "piring-besar";
+    var gayaPiring = "";
+    if (piringUrl) {
+      kelasPiring += " dengan-foto";
+      gayaPiring = ' style="background-image:url(\'' + esc(piringUrl) + '\')"';
+    }
     return (
       '<section class="layar-piring layar-anim">' +
       '<div><h2 class="judul-besar">Piringmu malam ini</h2>' +
       '<p class="sub" style="margin-inline:auto">Semua pilihanmu sudah masuk piring. Tinggal dieksekusi berdua.</p></div>' +
-      '<div class="piring-besar" role="img" aria-label="Piring berisi ' + esc(namaSemua) + '">' +
+      '<div class="' + kelasPiring + '"' + gayaPiring + ' role="img" aria-label="Piring berisi ' + esc(namaSemua) + '">' +
       makanan +
       '<div class="konfeti-wadah" aria-hidden="true">' + konfeti + "</div>" +
       "</div>" +
@@ -264,6 +295,7 @@
   }
 
   document.addEventListener("click", function (e) {
+    cobaMainkanMusik();
     var el = e.target.closest("[data-act]");
     if (!el) return;
     var act = el.getAttribute("data-act");
@@ -287,6 +319,55 @@
     if (e.key === "Escape") kembali();
   });
 
+  var musikLatar = document.getElementById("musikLatar");
+  var tombolMusik = document.getElementById("tombolMusik");
+
+  function bacaPrefMusik() {
+    try {
+      return window.localStorage.getItem("woyp-musik") !== "mati";
+    } catch (e) {
+      return true;
+    }
+  }
+
+  var musikNyala = bacaPrefMusik();
+
+  function labelMusik() {
+    if (!tombolMusik) return;
+    tombolMusik.textContent = musikNyala ? "Musik: nyala" : "Musik: mati";
+    tombolMusik.setAttribute("aria-pressed", musikNyala ? "true" : "false");
+  }
+
+  function cobaMainkanMusik() {
+    if (!musikNyala || !musikLatar) return;
+    try {
+      var p = musikLatar.play();
+      if (p && p.catch) p.catch(function () {});
+    } catch (e) {}
+  }
+
+  function setMusik(nyala) {
+    musikNyala = nyala;
+    try {
+      window.localStorage.setItem("woyp-musik", nyala ? "nyala" : "mati");
+    } catch (e) {}
+    labelMusik();
+    if (nyala) {
+      cobaMainkanMusik();
+    } else if (musikLatar) {
+      try {
+        musikLatar.pause();
+      } catch (e) {}
+    }
+  }
+
+  if (tombolMusik) {
+    tombolMusik.addEventListener("click", function () {
+      setMusik(!musikNyala);
+    });
+  }
+  labelMusik();
+
   async function boot() {
     gate = "loading";
     render();
@@ -303,6 +384,7 @@
       return;
     }
     db = L.prepare(res.data.categories, res.data.items);
+    piringUrl = (res.data.settings && res.data.settings.plate_image_url) || "";
     state = L.initial();
     gate = null;
     render();

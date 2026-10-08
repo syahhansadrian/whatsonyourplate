@@ -41,8 +41,18 @@
   var itemFile = document.getElementById("itemFile");
   var itemPreview = document.getElementById("itemPreview");
   var itemPesan = document.getElementById("itemPesan");
+  var itemHapusBg = document.getElementById("itemHapusBg");
 
-  var data = { categories: [], items: [] };
+  var dialogPiring = document.getElementById("dialogPiring");
+  var formPiring = document.getElementById("formPiring");
+  var piringUrl = document.getElementById("piringUrl");
+  var piringFile = document.getElementById("piringFile");
+  var piringPreview = document.getElementById("piringPreview");
+  var piringPesan = document.getElementById("piringPesan");
+  var tombolPiring = document.getElementById("tombolPiring");
+  var tombolHapusPiring = document.getElementById("piringHapus");
+
+  var data = { categories: [], items: [], settings: {} };
   var buka = {};
   var modeDaftar = false;
   var editKatId = null;
@@ -184,6 +194,7 @@
     }
     pesan(adminPesan, "");
     data = res.data;
+    data.settings = data.settings || {};
     renderDaftar();
   }
 
@@ -318,6 +329,7 @@
     editItem = { catId: catId, parentId: parentId || null, itemId: itemId || null };
     imgFile = null;
     itemFile.value = "";
+    itemHapusBg.checked = true;
     pesan(itemPesan, "");
     var it = itemId ? itemById(itemId) : null;
     dialogItemJudul.textContent = itemId
@@ -357,6 +369,121 @@
     }
   });
 
+  var piringImgFile = null;
+  var piringObjectUrl = null;
+
+  function setPreviewPiring(url) {
+    if (piringObjectUrl) {
+      URL.revokeObjectURL(piringObjectUrl);
+      piringObjectUrl = null;
+    }
+    if (url) {
+      piringPreview.innerHTML = '<img src="' + esc(url) + '" alt="">';
+    } else {
+      piringPreview.textContent = "🍽️";
+    }
+  }
+
+  function openPiringDialog() {
+    piringImgFile = null;
+    piringFile.value = "";
+    pesan(piringPesan, "");
+    piringUrl.value = (data.settings && data.settings.plate_image_url) || "";
+    setPreviewPiring(piringUrl.value.trim());
+    dialogPiring.showModal();
+    piringUrl.focus();
+  }
+
+  tombolPiring.addEventListener("click", openPiringDialog);
+
+  piringFile.addEventListener("change", function () {
+    var f = piringFile.files && piringFile.files[0];
+    if (f) {
+      piringImgFile = f;
+      piringUrl.value = "";
+      piringObjectUrl = URL.createObjectURL(f);
+      piringPreview.innerHTML = '<img src="' + esc(piringObjectUrl) + '" alt="">';
+    } else {
+      piringImgFile = null;
+      setPreviewPiring(piringUrl.value.trim());
+    }
+  });
+
+  piringUrl.addEventListener("input", function () {
+    var v = piringUrl.value.trim();
+    if (v) {
+      piringImgFile = null;
+      piringFile.value = "";
+      setPreviewPiring(v);
+    } else if (!piringImgFile) {
+      setPreviewPiring("");
+    }
+  });
+
+  formPiring.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    var tombolSimpan = formPiring.querySelector('button[type="submit"]');
+    var label = tombolSimpan.textContent;
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Menyimpan...";
+    try {
+      var url = "";
+      if (piringImgFile) {
+        var up = await S.uploadImage(piringImgFile);
+        if (!up.ok) {
+          pesan(piringPesan, up.error);
+          return;
+        }
+        url = up.data;
+      } else {
+        url = piringUrl.value.trim();
+      }
+      var res = await S.saveSetting("plate_image_url", url);
+      if (!res.ok) {
+        pesan(piringPesan, res.error);
+        return;
+      }
+      data.settings.plate_image_url = url;
+      dialogPiring.close();
+      pesan(adminPesan, url ? "Foto piring tersimpan." : "Piring kembali ke gambar bawaan.", "catatan");
+    } finally {
+      tombolSimpan.disabled = false;
+      tombolSimpan.textContent = label;
+    }
+  });
+
+  tombolHapusPiring.addEventListener("click", async function () {
+    var res = await S.saveSetting("plate_image_url", "");
+    if (!res.ok) {
+      pesan(piringPesan, res.error);
+      return;
+    }
+    piringImgFile = null;
+    piringFile.value = "";
+    piringUrl.value = "";
+    setPreviewPiring("");
+    data.settings.plate_image_url = "";
+    dialogPiring.close();
+    pesan(adminPesan, "Foto piring dihapus, memakai piring bawaan.", "catatan");
+  });
+
+  var modHapusBg = null;
+
+  function hapusLatar(file, onProgres) {
+    var impor = modHapusBg
+      ? Promise.resolve(modHapusBg)
+      : import("https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm");
+    return impor.then(function (mod) {
+      modHapusBg = mod;
+      return mod.removeBackground(file, {
+        model: "small",
+        progress: function (key, cur, total) {
+          if (total > 0) onProgres(Math.min(100, Math.round((cur / total) * 100)));
+        }
+      });
+    });
+  }
+
   formItem.addEventListener("submit", async function (e) {
     e.preventDefault();
     var nama = itemName.value.trim();
@@ -372,7 +499,23 @@
     try {
       var imageUrl = "";
       if (imgFile) {
-        var up = await S.uploadImage(imgFile);
+        var fileKirim = imgFile;
+        if (itemHapusBg.checked) {
+          tombolSimpan.textContent = "Menghapus latar...";
+          pesan(itemPesan, "Menghapus latar belakang. Pertama kali model AI (±50 MB) diunduh, sesudahnya disimpan di browser.", "catatan");
+          try {
+            var hasil = await hapusLatar(imgFile, function (p) {
+              pesan(itemPesan, "Menghapus latar belakang... " + p + "%", "catatan");
+            });
+            if (hasil) {
+              fileKirim = new File([hasil], "tanpa-latar.png", { type: "image/png" });
+              pesan(itemPesan, "");
+            }
+          } catch (errBg) {
+            pesan(itemPesan, "Hapus latar belakang gagal, foto asli yang dipakai.", "catatan");
+          }
+        }
+        var up = await S.uploadImage(fileKirim);
         if (!up.ok) {
           pesan(itemPesan, up.error);
           return;

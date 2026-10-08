@@ -5,6 +5,10 @@ Arah desain resmi proyek ini. Ditranskrip dari jawaban pemilik proyek.
 ## Identitas
 
 - Produk: "What's on Your Plate", aplikasi web untuk memilih makanan berdua dengan kekasih, terdiri dari halaman admin dan halaman presentasi.
+- Konsep: **gamifikasi memilih menu** — aplikasi untuk pasangan/teman yang bingung makan apa, di mana proses memilihnya yang dirayakan, bukan sekadar fungsionalitas. Layar dipenuhi foto makanan, pilihan diklik "di atas piring", dan piring akhir adalah hadiahnya.
+- Landing: cukup judul "What's on Your Plate" + tombol Mulai. Tanpa deskripsi apapun (permintaan pemilik proyek).
+- Urutan pilihan dipaksa mengikuti susunan admin; pemain tidak bisa melompat.
+- Musik latar: loop original 20 detik (dibuat sendiri untuk proyek ini), boleh diganti pemilik proyek dengan file yang sama namanya.
 - Kepribadian: playful & romantis. Hangat, ceria, sedikit flirty.
 - Suara teks: Bahasa Indonesia, akrab dan menggoda ringan ("Serahkan pilihan pada piring."), tanpa jargon korporat.
 
@@ -39,7 +43,7 @@ Tema terang saja, tanpa toggle gelap: palet krem + blush adalah identitas yang d
 
 ## Motif identitas
 
-- **Piring bundar**: setiap foto makanan selalu bulat seperti piring; layar akhir berupa piring besar berisi bulatan-bulatan makanan. Bulatan diulang di chip, avatar emoji placeholder, dan titik progres.
+- **Piring bundar**: setiap foto makanan selalu bulat seperti piring; layar akhir berupa piring besar berisi bulatan-bulatan makanan. Bulatan diulang di chip, avatar emoji placeholder, dan titik progres. Admin bisa mengunggah foto piring sendiri; foto itu menjadi panggung tiap layar pilihan (fallback: cincin piring motif), dan jadi alas piring akhir.
 
 ## Yang dihindari
 

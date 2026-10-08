@@ -56,6 +56,7 @@
           <button type="button" class="btn btn-kecil btn-hantu" id="tombolEkspor">Ekspor JSON</button>
           <button type="button" class="btn btn-kecil btn-hantu" id="tombolImpor">Impor JSON</button>
           <input type="file" id="fileImpor" accept="application/json,.json" hidden>
+          <button type="button" class="btn btn-kecil btn-hantu" id="tombolPiring">Foto piring</button>
           <button type="button" class="btn btn-kecil btn-utama" id="tombolTambahKat">+ Tambah kategori</button>
         </div>
       </div>
@@ -104,10 +105,38 @@
             <input id="itemUrl" type="url" placeholder="https://...">
             <input type="file" id="itemFile" class="pilih-file" accept="image/*" aria-label="Pilih gambar dari komputer">
             <span class="bantuan">Pilih file dari komputer atau tempel URL. Kosongkan keduanya untuk memakai placeholder otomatis.</span>
+            <label class="cek-hapusbg" for="itemHapusBg">
+              <input type="checkbox" id="itemHapusBg" checked>
+              Hapus latar belakang otomatis saat menyimpan
+            </label>
+            <span class="bantuan">Hasilnya PNG transparan. Pertama kali dipakai, browser mengunduh model AI (±50 MB) sekali lalu menyimpannya di cache. Tanpa centang, foto dikirim apa adanya.</span>
           </div>
         </div>
       </div>
       <div class="dialog-aksi">
+        <button type="button" class="btn btn-hantu" data-tutup>Batal</button>
+        <button type="submit" class="btn btn-utama">Simpan</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dialogPiring">
+    <form class="dialog-isi" id="formPiring" novalidate>
+      <h2 class="dialog-judul">Foto piring</h2>
+      <div class="salah" id="piringPesan" hidden></div>
+      <div class="field">
+        <label for="piringUrl">URL foto piring (opsional)</label>
+        <div class="baris-gambar">
+          <span class="preview-gambar" id="piringPreview" aria-hidden="true">🍽️</span>
+          <div class="baris-url-gambar" style="flex:1;min-width:200px">
+            <input id="piringUrl" type="url" placeholder="https://...">
+            <input type="file" id="piringFile" class="pilih-file" accept="image/*" aria-label="Pilih foto piring dari komputer">
+            <span class="bantuan">Foto piring dipakai sebagai panggung di halaman show: pilihan makanan ditampilkan di atasnya, termasuk di layar piring akhir. Pilih file atau tempel URL lalu Simpan.</span>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-aksi">
+        <button type="button" class="btn btn-hantu" id="piringHapus">Hapus foto</button>
         <button type="button" class="btn btn-hantu" data-tutup>Batal</button>
         <button type="submit" class="btn btn-utama">Simpan</button>
       </div>

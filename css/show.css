@@ -17,6 +17,8 @@
 }
 
 .tahap {
+  flex: 1;
+  text-align: center;
   font-weight: 700;
   color: var(--raspberry);
   letter-spacing: 0.04em;
@@ -58,9 +60,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 18px;
-  padding: clamp(40px, 9vw, 90px) clamp(16px, 4vw, 32px);
-  overflow: hidden;
+  gap: clamp(26px, 6vh, 52px);
+  padding: clamp(32px, 7vh, 72px) clamp(16px, 4vw, 32px);
+  overflow-x: clip;
 }
 
 .piring-lingkar {
@@ -95,18 +97,8 @@
   position: relative;
 }
 
-.layar-landing .sapaan {
-  font-weight: 800;
-  color: var(--raspberry);
-  font-size: clamp(1rem, 3vw, 1.2rem);
-}
-
 .layar-landing .judul-besar span {
   display: block;
-}
-
-.layar-landing .sub {
-  margin-bottom: 6px;
 }
 
 .btn-besar {
@@ -195,10 +187,47 @@
   font-size: clamp(1rem, 2.6vw, 1.1rem);
 }
 
-.pilihan-grid {
+.panggung {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.panggung-pilihan {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 26px);
+  width: 100%;
+  max-width: 980px;
+  margin-bottom: clamp(-72px, -7vw, -34px);
+}
+
+.panggung-pilihan .daftar-kategori {
+  width: 100%;
+}
+
+.panggung-piring {
+  position: relative;
+  z-index: 0;
+  width: min(74vw, 440px);
+  aspect-ratio: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-  gap: clamp(12px, 3vw, 20px);
+  place-items: center;
+}
+
+.piring-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.panggung .piring-lingkar {
+  width: 100%;
 }
 
 .kartu-pilihan {
@@ -236,6 +265,23 @@
   outline: 2px solid var(--blush-tua);
   overflow: hidden;
   font-size: clamp(2.2rem, 7vw, 3rem);
+}
+
+.panggung .kartu-pilihan {
+  flex: 1 1 clamp(160px, 42vw, 250px);
+  max-width: 250px;
+  gap: 14px;
+  padding: clamp(18px, 4vw, 26px) clamp(12px, 3vw, 20px);
+}
+
+.panggung .bulatan {
+  width: clamp(120px, 26vw, 176px);
+  font-size: clamp(3rem, 10vw, 4.4rem);
+  border-width: 5px;
+}
+
+.panggung .hasil-bulatan {
+  width: clamp(170px, 44vw, 260px);
 }
 
 .bulatan img {
@@ -323,6 +369,15 @@
   inset: 9%;
   border-radius: 50%;
   border: 2px dashed var(--blush);
+}
+
+.piring-besar.dengan-foto {
+  background-size: cover;
+  background-position: center;
+}
+
+.piring-besar.dengan-foto::before {
+  display: none;
 }
 
 .makanan-di-piring {

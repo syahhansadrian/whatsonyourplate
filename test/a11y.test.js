@@ -116,6 +116,12 @@ async function ujiAdminAxe() {
 
   klik(w, d.querySelector("#dialogKat [data-tutup]"));
   await tunggu();
+  klik(w, d.getElementById("tombolPiring"));
+  await tunggu();
+  await jalankanAxe(w, "admin:dialog-piring");
+
+  klik(w, d.querySelector("#dialogPiring [data-tutup]"));
+  await tunggu();
   klik(w, d.getElementById("tombolKeluar"));
   await tunggu();
   await jalankanAxe(w, "admin:login");

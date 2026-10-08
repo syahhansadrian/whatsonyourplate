@@ -22,9 +22,26 @@ create table if not exists public.items (
 create index if not exists items_category_idx on public.items(category_id);
 create index if not exists items_parent_idx on public.items(parent_id);
 
+create table if not exists public.settings (
+  key text primary key,
+  value text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.settings enable row level security;
+
+create policy "publik baca pengaturan"
+  on public.settings for select
+  using (true);
+
+create policy "admin ubah pengaturan"
+  on public.settings for all
+  to authenticated
+  using (true)
+  with check (true);
+
 alter table public.categories enable row level security;
 alter table public.items enable row level security;
-
 create policy "publik baca kategori"
   on public.categories for select
   using (true);

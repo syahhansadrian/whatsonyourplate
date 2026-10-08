@@ -51,9 +51,17 @@
       if (cats.error) return fail(cats.error);
       var items = await db.from("items").select("*");
       if (items.error) return fail(items.error);
+      var settings = {};
+      var set = await db.from("settings").select("*");
+      if (!set.error && set.data) {
+        set.data.forEach(function (row) {
+          settings[row.key] = row.value;
+        });
+      }
       return ok({
         categories: (cats.data || []).sort(bySort),
-        items: (items.data || []).sort(bySort)
+        items: (items.data || []).sort(bySort),
+        settings: settings
       });
     } catch (e) {
       return fail(e);
@@ -267,6 +275,20 @@
     }
   }
 
+  async function saveSetting(key, value) {
+    try {
+      var res = await client().from("settings").upsert({
+        key: key,
+        value: value || "",
+        updated_at: new Date().toISOString()
+      }).select().single();
+      if (res.error) return fail(res.error);
+      return ok(res.data);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+
   async function exportData() {
     try {
       var res = await fetchAll();
@@ -309,6 +331,14 @@
         }));
         if (insI.error) return fail(insI.error);
       }
+      var settings = data.settings || {};
+      var skeys = Object.keys(settings);
+      if (skeys.length) {
+        var insS = await db.from("settings").upsert(skeys.map(function (k) {
+          return { key: k, value: settings[k] || "" };
+        }));
+        if (insS.error) return fail(insS.error);
+      }
       return ok(null);
     } catch (e) {
       return fail(e);
@@ -332,6 +362,7 @@
     deleteItem: deleteItem,
     moveSibling: moveSibling,
     uploadImage: uploadImage,
+    saveSetting: saveSetting,
     exportData: exportData,
     importData: importData
   };
