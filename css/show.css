@@ -93,7 +93,7 @@
   background: rgba(246, 201, 206, 0.35);
 }
 
-.layar-landing > * {
+.layar-landing > :not(.piring-lingkar) {
   position: relative;
 }
 
