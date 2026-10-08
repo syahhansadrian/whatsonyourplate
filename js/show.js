@@ -296,6 +296,7 @@
 
   document.addEventListener("click", function (e) {
     cobaMainkanMusik();
+    if (e.target.closest("button")) putarSfx();
     var el = e.target.closest("[data-act]");
     if (!el) return;
     var act = el.getAttribute("data-act");
@@ -320,53 +321,26 @@
   });
 
   var musikLatar = document.getElementById("musikLatar");
-  var tombolMusik = document.getElementById("tombolMusik");
-
-  function bacaPrefMusik() {
-    try {
-      return window.localStorage.getItem("woyp-musik") !== "mati";
-    } catch (e) {
-      return true;
-    }
-  }
-
-  var musikNyala = bacaPrefMusik();
-
-  function labelMusik() {
-    if (!tombolMusik) return;
-    tombolMusik.textContent = musikNyala ? "Musik: nyala" : "Musik: mati";
-    tombolMusik.setAttribute("aria-pressed", musikNyala ? "true" : "false");
-  }
+  var sfxKlik = document.getElementById("sfxKlik");
 
   function cobaMainkanMusik() {
-    if (!musikNyala || !musikLatar) return;
+    if (!musikLatar) return;
     try {
       var p = musikLatar.play();
       if (p && p.catch) p.catch(function () {});
     } catch (e) {}
   }
 
-  function setMusik(nyala) {
-    musikNyala = nyala;
+  function putarSfx() {
+    if (!sfxKlik) return;
     try {
-      window.localStorage.setItem("woyp-musik", nyala ? "nyala" : "mati");
+      sfxKlik.currentTime = 0;
+      var p = sfxKlik.play();
+      if (p && p.catch) p.catch(function () {});
     } catch (e) {}
-    labelMusik();
-    if (nyala) {
-      cobaMainkanMusik();
-    } else if (musikLatar) {
-      try {
-        musikLatar.pause();
-      } catch (e) {}
-    }
   }
 
-  if (tombolMusik) {
-    tombolMusik.addEventListener("click", function () {
-      setMusik(!musikNyala);
-    });
-  }
-  labelMusik();
+  cobaMainkanMusik();
 
   async function boot() {
     gate = "loading";

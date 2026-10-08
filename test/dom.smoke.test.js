@@ -57,17 +57,9 @@ async function ujiShow() {
   assert.ok(d.querySelector('[data-act="mulai"]').textContent.trim() === "Mulai", "show: tombol landing hanya 'Mulai'");
   assert.strictEqual(d.getElementById("tombolKembali").hidden, true, "show: tombol kembali tersembunyi di landing");
 
-  const tombolMusik = d.getElementById("tombolMusik");
-  assert.ok(tombolMusik, "show: tombol musik ada");
-  assert.strictEqual(tombolMusik.getAttribute("aria-pressed"), "true", "show: musik bawaan nyala");
-  klik(w, tombolMusik);
-  await tunggu();
-  assert.ok(tombolMusik.textContent.includes("mati"), "show: klik mematikan musik");
-  assert.strictEqual(tombolMusik.getAttribute("aria-pressed"), "false", "show: aria-pressed musik mati");
-  assert.strictEqual(w.localStorage.getItem("woyp-musik"), "mati", "show: preferensi musik tersimpan");
-  klik(w, tombolMusik);
-  await tunggu();
-  assert.ok(tombolMusik.textContent.includes("nyala"), "show: klik menyalakan musik lagi");
+  assert.ok(!d.getElementById("tombolMusik"), "show: tombol musik dihapus, musik selalu jalan");
+  assert.strictEqual(d.getElementById("musikLatar").getAttribute("src"), "assets/musik/bgmusik.mp3", "show: musik latar pakai bgmusik.mp3");
+  assert.strictEqual(d.getElementById("sfxKlik").getAttribute("src"), "assets/musik/pop.mp3", "show: sfx klik pakai pop.mp3");
 
   klik(w, d.querySelector('[data-act="mulai"]'));
   await tunggu();

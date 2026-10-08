@@ -93,6 +93,14 @@
   background: rgba(246, 201, 206, 0.35);
 }
 
+.layar-landing > .piring-lingkar {
+  top: 0;
+  right: 0;
+  left: auto;
+  width: min(64vw, 440px);
+  transform: translate(30%, -30%);
+}
+
 .layar-landing > :not(.piring-lingkar) {
   position: relative;
 }
